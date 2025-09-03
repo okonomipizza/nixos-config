@@ -1,0 +1,27 @@
+# Starship config
+
+format = '''
+$os$username[|](bold white)$directory$git_branch
+[└─>](bold green) '''
+
+scan_timeout = 10
+add_newline = true
+
+[character]
+success_symbol = '[➜](bold green)'
+
+[package]
+disabled = true
+
+[os]
+disabled = false
+format = "[$symbol]($style)"
+
+[os.symbols]
+NixOS = " "
+
+[username]
+show_always = true
+style_user = "bold blue"
+format = "[$user]($style)"
+
