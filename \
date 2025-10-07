@@ -8,10 +8,6 @@
 
 let
   shellAliases = {
-    ls = "ls -F";
-    rm = "rm -i";
-    cp = "cp -i";
-    mv = "mv -i";
     ga = "git add";
     gc = "git commit";
     gco = "git checkout";
@@ -48,9 +44,6 @@ in
       # GUI
       ghostty
       discord
-      
-      erlang_28
-      pkgs.erlang-language-platform
     ]
     ++ [
       inputs.zig.packages.${system}.master
@@ -82,10 +75,6 @@ in
     enable = true;
     settings = pkgs.lib.importTOML ./starship.toml;
   };
-
-  programs.zed-editor = {
-    enable = true;
-    };
 
   programs.git = {
     enable = true;
@@ -124,7 +113,6 @@ in
     extraPackages = with pkgs; [
       lua-language-server
       nixd
-      rust-analyzer
     ];
   };
 

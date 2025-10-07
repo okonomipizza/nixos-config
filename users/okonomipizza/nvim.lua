@@ -106,6 +106,35 @@ keymap("n", "<leader>tb", function () open_terminal_below(15) end, { desc = "Ter
 keymap("n", "<leader>tr", function () open_terminal_right(80) end, { desc = "Terminal below" })
 keymap("t", "<ESC>", "<C-\\><C-n>", {desc = "Terminal: normal mode" })
 
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    -- 定義ジャンプ
+    keymap('n', 'gd', vim.lsp.buf.definition, { buffer = ev.buf, desc = 'Go to definition' })
+    keymap('n', 'gD', vim.lsp.buf.declaration, { buffer = ev.buf, desc = 'Go to declaration' })
+    keymap('n', 'gi', vim.lsp.buf.implementation, { buffer = ev.buf, desc = 'Go to implementation' })
+    keymap('n', 'gt', vim.lsp.buf.type_definition, { buffer = ev.buf, desc = 'Go to type definition' })
+    keymap('n', 'gr', vim.lsp.buf.references, { buffer = ev.buf, desc = 'Show references' })
+    -- ドキュメント表示
+    keymap('n', 'K', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'Show hover documentation' })
+    keymap('n', '<C-k>', vim.lsp.buf.signature_help, { buffer = ev.buf, desc = 'Show signature help' })
+    -- リファクタリング
+    keymap('n', '<leader>rn', vim.lsp.buf.rename, { buffer = ev.buf, desc = 'Rename symbol' })
+    keymap({'n', 'v'}, '<leader>ca', vim.lsp.buf.code_action, { buffer = ev.buf, desc = 'Code actions' })
+    -- フォーマット
+    keymap('n', '<leader>f', function()
+      vim.lsp.buf.format { async = true }
+    end, { buffer = ev.buf, desc = 'Format buffer' })
+    -- 診断（エラー・警告）ナビゲーション
+    keymap('n', '[d', vim.diagnostic.goto_prev, { buffer = ev.buf, desc = 'Go to previous diagnostic' })
+    keymap('n', ']d', vim.diagnostic.goto_next, { buffer = ev.buf, desc = 'Go to next diagnostic' })
+    keymap('n', '<leader>e', vim.diagnostic.open_float, { buffer = ev.buf, desc = 'Show diagnostic in float' })
+    keymap('n', '<leader>q', vim.diagnostic.setloclist, { buffer = ev.buf, desc = 'Open diagnostic quickfix list' })
+  end,
+})
+
 ------------------------------------------------
 --- Language Servers
 ------------------------------------------------
@@ -227,7 +256,7 @@ require('kanagawa').setup({
     keywordStyle = { italic = true},
     statementStyle = { bold = true },
     typeStyle = {},
-    transparent = false,         -- do not set background color
+    transparent = true,         -- do not set background color
     dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
     terminalColors = true,       -- define vim.g.terminal_color_{0,17}
     colors = {                   -- add/modify theme and palette colors

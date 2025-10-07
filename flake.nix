@@ -13,10 +13,21 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+   
+    # wayland compositor
+    niri = {
+        url = "github:YaLTeR/niri";
+        inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     zig = {
       url = "github:mitchellh/zig-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    jsonc_fmt = {
+        url = "github:okonomipizza/jsonc_fmt";
+        inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -25,7 +36,9 @@
       self,
       nixpkgs,
       home-manager,
+      niri,
       zig,
+      jsonc_fmt,
       ...
     }@inputs:
     let
