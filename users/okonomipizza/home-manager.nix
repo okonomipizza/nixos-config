@@ -1,4 +1,8 @@
-{ inputs, ... }:
+{ 
+  currentSystemName,
+  inputs,
+  ...
+}:
 {
   config,
   lib,
@@ -18,6 +22,7 @@ let
     gdiff = "git diff";
     gp = "git push";
     gs = "git status";
+    zed = "zeditor";
   };
 
 in
@@ -25,6 +30,7 @@ in
   imports = [
     ./niri
     ./waybar
+    ./zed
   ];
   home.stateVersion = "25.05";
 
@@ -47,14 +53,17 @@ in
 
       # GUI
       ghostty
-      discord
-      
+      # discord
+
+      open-vm-tools
+
       erlang_28
       pkgs.erlang-language-platform
     ]
     ++ [
-      inputs.zig.packages.${system}.master
+      #inputs.zig.packages.${system}.master
       inputs.jsonc_fmt.packages.${system}.default
+      inputs.self.packages.${system}.efmt
     ];
 
   #--------------------------------------------------
@@ -76,6 +85,9 @@ in
   programs.fish = {
     enable = true;
     shellAliases = shellAliases;
+    shellInit = ''
+        set -gx PATH $HOME/.cache/rebar3/bin $PATH
+    '';
   };
 
   programs.starship = {
@@ -83,9 +95,9 @@ in
     settings = pkgs.lib.importTOML ./starship.toml;
   };
 
-  programs.zed-editor = {
-    enable = true;
-    };
+  #programs.zed-editor = {
+  #  enable = true;
+  #  };
 
   programs.git = {
     enable = true;
@@ -106,7 +118,7 @@ in
     plugins = with pkgs.vimPlugins; [
       nvim-treesitter.withAllGrammars
       nvim-lspconfig
-      
+
       blink-cmp
       telescope-nvim
 
@@ -129,7 +141,11 @@ in
   };
 
   # Browser
-  programs.google-chrome.enable = true;
+  # programs.google-chrome.enable = true;
+  programs.google-chrome = lib.mkIf (currentSystemName == "x86_64") {
+    enable = true;
+  };
+
   programs.firefox.enable = true;
 
 }

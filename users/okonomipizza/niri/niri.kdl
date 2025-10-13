@@ -6,6 +6,10 @@ input {
     }
 }
 
+output "Virtual-1" {
+    mode "1920x1080@60.000"
+}
+
 binds {
     // Mouse wheel navigation
     Mod+WheelScrollUp cooldown-ms=150 { focus-column-left; }

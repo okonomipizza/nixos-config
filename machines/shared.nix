@@ -92,8 +92,6 @@
   # services.xserver.desktopManager.gnome.enable = true;
 
   hardware.graphics.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
-  hardware.nvidia.open = true;
   # programs.hyprland.enable = true;
   programs.niri.enable = true;
 
