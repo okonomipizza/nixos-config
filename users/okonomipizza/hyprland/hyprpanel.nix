@@ -1,5 +1,4 @@
-{ inputs, ... }:
-{
+{inputs, ...}: {
   programs.hyprpanel = {
     enable = true;
     settings = {

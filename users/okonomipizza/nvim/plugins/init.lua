@@ -1,0 +1,5 @@
+require('plugins.lualine')
+require('plugins.treesitter')
+require('plugins.nvim-tree')
+require('plugins.blink')
+require('plugins.kanagawa')

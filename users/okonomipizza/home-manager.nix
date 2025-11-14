@@ -1,17 +1,15 @@
-{ 
+{
   currentSystemName,
   inputs,
   ...
-}:
-{
+}: {
   config,
   lib,
   pkgs,
   ...
-}:
-
-let
+}: let
   shellAliases = {
+    pn = "pnpm";
     ls = "ls -F";
     rm = "rm -i";
     cp = "cp -i";
@@ -23,10 +21,10 @@ let
     gp = "git push";
     gs = "git status";
     zed = "zeditor";
+    sd = "sudo systemctl poweroff";
+    v = "nvim";
   };
-
-in
-{
+in {
   imports = [
     ./niri
     ./waybar
@@ -39,8 +37,7 @@ in
   #--------------------------------------------------
   # Packages
   #--------------------------------------------------
-  home.packages =
-    with pkgs;
+  home.packages = with pkgs;
     [
       # CLI
       bat
@@ -50,19 +47,29 @@ in
       jq
       tree
       gcc
+      libnotify
+
+      nodejs
 
       # GUI
       ghostty
-      # discord
+      discord
 
       open-vm-tools
 
+      biome
+      alejandra
+
+      pnpm
+
+      go
       erlang_28
       pkgs.erlang-language-platform
     ]
     ++ [
       #inputs.zig.packages.${system}.master
       inputs.jsonc_fmt.packages.${system}.default
+      inputs.iroha.packages.${system}.default
       inputs.self.packages.${system}.efmt
     ];
 
@@ -70,6 +77,7 @@ in
   # dotfiles
   #--------------------------------------------------
   xdg.configFile = {
+    "nvim/lua".source = ./nvim;
     "ghostty/config".text = builtins.readFile ./ghostty.linux;
     "niri/config.kdl".source = ./niri/niri.kdl;
   };
@@ -79,15 +87,21 @@ in
   #--------------------------------------------------
   programs.bash = {
     enable = true;
-      shellAliases = shellAliases;
+    shellAliases = shellAliases;
   };
 
   programs.fish = {
     enable = true;
     shellAliases = shellAliases;
     shellInit = ''
-        set -gx PATH $HOME/.cache/rebar3/bin $PATH
+      set -gx PATH $HOME/.cache/rebar3/bin $PATH
     '';
+    functions = {
+      btconnect = {
+        description = "Connect to Bluetooth";
+        body = builtins.readFile ./fish/bluetooth-connect.fish;
+      };
+    };
   };
 
   programs.starship = {
@@ -113,7 +127,7 @@ in
   programs.neovim = {
     enable = true;
     defaultEditor = true;
-    extraLuaConfig = lib.fileContents ./nvim.lua;
+    extraLuaConfig = lib.fileContents ./nvim/init.lua;
 
     plugins = with pkgs.vimPlugins; [
       nvim-treesitter.withAllGrammars
@@ -137,7 +151,43 @@ in
       lua-language-server
       nixd
       rust-analyzer
+      gopls
     ];
+  };
+
+  programs.vscode = {
+    enable = true;
+    profiles.default = {
+      extensions = with pkgs.vscode-extensions;
+        [
+          vscode-icons-team.vscode-icons
+          vscodevim.vim
+          golang.go
+          bbenoist.nix
+          biomejs.biome
+        ]
+        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          {
+            name = "moonbit-lang";
+            publisher = "moonbit";
+            version = "0.1.2025110702";
+            sha256 = "sha256-1LB9I8vTutRdwYIxnKMT965hvAmsIK5W5fshclgkvUg=";
+          }
+        ];
+      userSettings = {
+        "editor.formatOnSave" = true;
+        "editor.defaultFormatter" = "biomejs.biome";
+        "[javascript]" = {
+          "editor.defaultFormatter" = "biomejs.biome";
+        };
+        "[typescript]" = {
+          "editor.defaultFormatter" = "biomejs.biome";
+        };
+        "[json]" = {
+          "editor.defaultFormatter" = "biomejs.biome";
+        };
+      };
+    };
   };
 
   # Browser
@@ -147,5 +197,4 @@ in
   };
 
   programs.firefox.enable = true;
-
 }

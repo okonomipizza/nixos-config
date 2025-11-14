@@ -1,90 +1,87 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   ws-switch =
     pkgs.writeScriptBin "ws-switch"
-      # bash
-      ''
-        monitor=$(hyprctl activeworkspace -j | jq .monitorID)
-        hyprctl dispatch workspace $(($monitor * 10 + $1))
-      '';
+    # bash
+    ''
+      monitor=$(hyprctl activeworkspace -j | jq .monitorID)
+      hyprctl dispatch workspace $(($monitor * 10 + $1))
+    '';
   ws-move =
     pkgs.writeScriptBin "ws-move"
-      # bash
-      ''
-        monitor=$(hyprctl activeworkspace -j | jq .monitorID)
-        hyprctl dispatch movetoworkspace $(($monitor * 10 + $1))
-      '';
+    # bash
+    ''
+      monitor=$(hyprctl activeworkspace -j | jq .monitorID)
+      hyprctl dispatch movetoworkspace $(($monitor * 10 + $1))
+    '';
 
   toggle-monitor =
     pkgs.writeScriptBin "toggle-monitor"
-      # bash
-      ''
-        hyprctl monitors -j | jq 'map(select(.focused|not).activeWorkspace.id)[0]' | xargs hyprctl dispatch workspace
-      '';
+    # bash
+    ''
+      hyprctl monitors -j | jq 'map(select(.focused|not).activeWorkspace.id)[0]' | xargs hyprctl dispatch workspace
+    '';
 
   better-movefocus =
     pkgs.writeScriptBin "better-movefocus"
-      # bash
-      ''
-        if [ "$(hyprctl activewindow -j | jq .fullscreen)" = "true" ]; then
-          hyprctl monitors -j | jq 'map(select(.focused|not).activeWorkspace.id)[0]' | xargs hyprctl dispatch workspace
-        else
-          hyprctl dispatch movefocus $1
-        fi
-      '';
+    # bash
+    ''
+      if [ "$(hyprctl activewindow -j | jq .fullscreen)" = "true" ]; then
+        hyprctl monitors -j | jq 'map(select(.focused|not).activeWorkspace.id)[0]' | xargs hyprctl dispatch workspace
+      else
+        hyprctl dispatch movefocus $1
+      fi
+    '';
 
   open-terminal =
     pkgs.writeScriptBin "open-terminal"
-      # bash
-      ''
-        window_count=$(hyprctl activeworkspace -j | jq .windows)
-        is_fullscreen=$(hyprctl activeworkspace -j | jq .hasfullscreen)
+    # bash
+    ''
+      window_count=$(hyprctl activeworkspace -j | jq .windows)
+      is_fullscreen=$(hyprctl activeworkspace -j | jq .hasfullscreen)
 
-        hyprctl dispatch exec ghostty
+      hyprctl dispatch exec ghostty
 
-        if [ "$window_count" -eq 0 ] && [ "$is_fullscreen" = "false" ]; then
-          sleep 0.1
-          hyprctl dispatch fullscreen
-        elif [ "$window_count" -ge 1 ] && [ "$is_fullscreen" = "true" ]; then
-          hyprctl dispatch fullscreen
-        fi
-      '';
+      if [ "$window_count" -eq 0 ] && [ "$is_fullscreen" = "false" ]; then
+        sleep 0.1
+        hyprctl dispatch fullscreen
+      elif [ "$window_count" -ge 1 ] && [ "$is_fullscreen" = "true" ]; then
+        hyprctl dispatch fullscreen
+      fi
+    '';
 
   open-wofi =
     pkgs.writeScriptBin "open-wofi"
-      # bash
-      ''
-        window_count=$(hyprctl activeworkspace -j | jq .windows)
-        is_fullscreen=$(hyprctl activeworkspace -j | jq .hasfullscreen)
+    # bash
+    ''
+      window_count=$(hyprctl activeworkspace -j | jq .windows)
+      is_fullscreen=$(hyprctl activeworkspace -j | jq .hasfullscreen)
 
-        wofi --show drun --width 512px
+      wofi --show drun --width 512px
 
-        if [ "$window_count" -eq 0 ] && [ "$is_fullscreen" = "false" ]; then
-          sleep 0.1
-          hyprctl dispatch fullscreen
-        elif [ "$window_count" -ge 1 ] && [ "$is_fullscreen" = "true" ]; then
-          hyprctl dispatch fullscreen
-        fi
-      '';
+      if [ "$window_count" -eq 0 ] && [ "$is_fullscreen" = "false" ]; then
+        sleep 0.1
+        hyprctl dispatch fullscreen
+      elif [ "$window_count" -ge 1 ] && [ "$is_fullscreen" = "true" ]; then
+        hyprctl dispatch fullscreen
+      fi
+    '';
 
   close-window =
     pkgs.writeScriptBin "close-window"
-      # bash
-      ''
-        hyprctl dispatch killactive
-        sleep 0.01
+    # bash
+    ''
+      hyprctl dispatch killactive
+      sleep 0.01
 
-        window_count=$(hyprctl activeworkspace -j | jq .windows)
-        is_fullscreen=$(hyprctl activeworkspace -j | jq .hasfullscreen)
-        if [ "$window_count" -eq 1 ] && [ "$is_fullscreen" = "false" ]; then
-          hyprctl dispatch fullscreen
-        elif [ "$window_count" -gt 1 ] && [ "$is_fullscreen" = "true" ]; then
-          hyprctl dispatch fullscreen
-        fi
-      '';
-
-in
-{
+      window_count=$(hyprctl activeworkspace -j | jq .windows)
+      is_fullscreen=$(hyprctl activeworkspace -j | jq .hasfullscreen)
+      if [ "$window_count" -eq 1 ] && [ "$is_fullscreen" = "false" ]; then
+        hyprctl dispatch fullscreen
+      elif [ "$window_count" -gt 1 ] && [ "$is_fullscreen" = "true" ]; then
+        hyprctl dispatch fullscreen
+      fi
+    '';
+in {
   wayland.windowManager.hyprland.settings = {
     "$mainMod" = "SUPER";
     "$subMod" = "ALT";

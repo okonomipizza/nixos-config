@@ -1,6 +1,8 @@
-
-{ pkgs, inputs, ... }:
 {
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     # ./hyprpaper.nix
     ./wofi.nix
@@ -15,6 +17,4 @@
     viu # cli image viewer
     swww # wallpaper
   ];
-
-
 }

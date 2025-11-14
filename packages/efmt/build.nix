@@ -1,4 +1,4 @@
 let
-    pkgs = import <nixpkgs> {};
+  pkgs = import <nixpkgs> {};
 in
-    pkgs.callPackage ./default.nix {}
+  pkgs.callPackage ./default.nix {}

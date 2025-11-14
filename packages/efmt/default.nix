@@ -1,8 +1,8 @@
-{ lib
-, rustPlatform
-, fetchFromGitHub
+{
+  lib,
+  rustPlatform,
+  fetchFromGitHub,
 }:
-
 rustPlatform.buildRustPackage rec {
   pname = "efmt";
   version = "0.19.1";
@@ -20,7 +20,7 @@ rustPlatform.buildRustPackage rec {
     description = "Erlang code formatter";
     homepage = "https://github.com/sile/efmt";
     license = licenses.mit;
-    maintainers = [ ];
+    maintainers = [];
     mainProgram = "efmt";
   };
 }

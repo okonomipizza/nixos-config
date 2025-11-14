@@ -1,5 +1,8 @@
-{ pkgs, inputs, ... }:
 {
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ./settings.nix
     ./key-binds.nix
@@ -17,6 +20,4 @@
     playerctl # media player control
     wl-clipboard # clipboard manager
   ];
-
-
 }

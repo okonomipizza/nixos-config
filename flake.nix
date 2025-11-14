@@ -15,8 +15,8 @@
     };
     # wayland compositor
     niri = {
-        url = "github:YaLTeR/niri";
-        inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:YaLTeR/niri";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     #zig = {
@@ -25,46 +25,48 @@
     #};
 
     jsonc_fmt = {
-        url = "github:okonomipizza/jsonc_fmt";
-        inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:okonomipizza/jsonc_fmt";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    iroha = {
+      url = "github:okonomipizza/iroha/v0.2.3";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      home-manager,
-      niri,
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    niri,
     #  zig,
-      jsonc_fmt,
-      ...
-    }@inputs:
-    let
-      mkSystem = import ./lib/mksystem.nix {
-        inherit nixpkgs inputs;
-      };
-      
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-    in
-    {
-      nixosConfigurations.x86_64 = mkSystem "x86_64" rec {
-        system = "x86_64-linux";
-        user = "okonomipizza";
-      };
-      nixosConfigurations.vm-aarch64 = mkSystem "vm-aarch64" rec {
-        system = "aarch64-linux";
-        user = "okonomipizza";
-      };
-
-      packages = forAllSystems (system:
-        let
-            pkgs = nixpkgs.legacyPackages.${system};
-        in
-        {
-            efmt = pkgs.callPackage ./packages/efmt {};
-        }
-      );
+    jsonc_fmt,
+    iroha,
+    ...
+  } @ inputs: let
+    mkSystem = import ./lib/mksystem.nix {
+      inherit nixpkgs inputs;
     };
+
+    supportedSystems = ["x86_64-linux" "aarch64-linux"];
+    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+  in {
+    nixosConfigurations.x86_64 = mkSystem "x86_64" rec {
+      system = "x86_64-linux";
+      user = "okonomipizza";
+    };
+    nixosConfigurations.vm-aarch64 = mkSystem "vm-aarch64" rec {
+      system = "aarch64-linux";
+      user = "okonomipizza";
+    };
+
+    packages = forAllSystems (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        efmt = pkgs.callPackage ./packages/efmt {};
+      }
+    );
+  };
 }

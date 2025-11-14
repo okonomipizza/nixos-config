@@ -60,3 +60,4 @@ window-rule {
 }
 
 spawn-at-startup "swww-daemon"
+spawn-at-startup "iroha"

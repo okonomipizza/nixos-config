@@ -5,10 +5,8 @@
   currentSystem,
   currentSystemName,
   ...
-}:
-
-{
-  imports = [ ];
+}: {
+  imports = [];
 
   nix = {
     settings = {
@@ -76,7 +74,7 @@
           "JetBrainsMono Nerd Font"
           "Noto Color Emoji"
         ];
-        emoji = [ "Noto Color Emoji" ];
+        emoji = ["Noto Color Emoji"];
       };
     };
   };
@@ -147,7 +145,7 @@
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-    networking.firewall.enable = true;
+  networking.firewall.enable = true;
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
 
