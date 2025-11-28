@@ -4,22 +4,34 @@
 }: name: {
   system,
   user,
+  darwin ? false,
 }: let
+
+  # I use Linux and macos
+  isLinux = !darwin;
+
+  # The config files for this system.
   machineConfig = ../machines/${name}.nix;
-  userOSConfig = ../users/${user}/nixos.nix;
+  userOSConfig = ../users/${user}/${if darwin then "darwin" else "nixos" }.nix;
   userHMConfig = ../users/${user}/home-manager.nix;
 
-  systemFunc = nixpkgs.lib.nixosSystem;
-  home-manager = inputs.home-manager.nixosModules;
+  systemFunc = if darwin then inputs.darwin.lib.darwinSystem else nixpkgs.lib.nixosSystem;
+  home-manager = if darwin then inputs.home-manager.darwinModules else inputs.home-manager.nixosModules;
 in
   systemFunc rec {
     inherit system;
 
     modules = [
       # Allow unfree packages.
-      {nixpkgs.config.allowUnfree = true;}
+      (if isLinux then {
+    nixpkgs.hostPlatform = system;
+  } else {
+    # macOS向けの設定があれば追加
+  })
+      
 
-      inputs.nix-snapd.nixosModules.default
+      # Snapd on Linux
+      (if isLinux then inputs.nix-snapd.nixosModules.default else {})
 
       machineConfig
       userOSConfig

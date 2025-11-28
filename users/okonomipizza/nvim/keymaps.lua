@@ -8,12 +8,19 @@ keymap("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle fi
 keymap("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" })
 keymap("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
 
--- telescope.nvim
-local builtin = require('telescope.builtin')
-keymap('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
-keymap('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
-keymap('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
-keymap('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+keymap("n", "<leader>ee", function()
+    require("oil").open()
+end, { desc = "Oil current buffer's directory" })
+
+keymap("n", "<leader>eE", function()
+    require("oil").open(".")
+end, { desc = "Oil ." })
+
+keymap("n", "<leader>cb", function()
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    vim.api.nvim_buf_set_lines(0, row, row, true, { "/* */" })
+    vim.api.nvim_win_set_cursor(0, { row + 1, 3 })
+end, { desc = "Insert /* */ block" })
 
 -- Window navigation
 keymap({ "n", "t" }, "<C-h>", "<C-w>h", { desc = "Go to left window" })

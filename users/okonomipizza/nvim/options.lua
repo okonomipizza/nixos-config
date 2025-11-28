@@ -33,6 +33,7 @@ opt.timeoutlen = 500          -- Key sequence timeout
 -- Clipboard & Mouse
 opt.clipboard = "unnamedplus" -- Use system clipboard
 opt.mouse = "a"               -- Enable mouse in all modes
+opt.mousescroll = "ver:3,hor:6"
 -- Scrolling & Windows
 opt.scrolloff = 8             -- Keep 8 lines above/below cursor
 opt.sidescrolloff = 8         -- Keep 8 columns left/right of cursor

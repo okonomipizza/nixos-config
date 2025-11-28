@@ -74,6 +74,19 @@ vim.diagnostic.config({
     },
 })
 
+-- C / C++
+local clangd_opts = {
+    cmd = { "clangd" },
+    filetypes = { "c", "cpp", "objc", "objcpp" },
+    root_markers = { "compile_commands.json", ".git" },
+    single_file_support = true,
+    capabilities = vim.tbl_deep_extend("force", {}, vim.lsp.protocol.make_client_capabilities(), {
+        offsetEncoding = { "utf-16" }, -- clangd の補完精度が上がる
+    }),
+}
+
+vim.lsp.config("clangd", clangd_opts)
+vim.lsp.enable("clangd")
 -- nvim-lspconfig
 local lua_ls_opts = {
     cmd = { 'lua-language-server' },

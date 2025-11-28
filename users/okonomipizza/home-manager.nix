@@ -8,12 +8,16 @@
   pkgs,
   ...
 }: let
+
+  isDarwin = currentSystemName == "macbook";
+  isLinux = currentSystemName == "x86_64" || currentSystemName == "vm-aarch64";
+
   shellAliases = {
     pn = "pnpm";
     ls = "ls -F";
     rm = "rm -i";
     cp = "cp -i";
-    mv = "mv -i";
+    mvgk = "mv -i";
     ga = "git add";
     gc = "git commit";
     gco = "git checkout";
@@ -26,10 +30,9 @@
   };
 in {
   imports = [
+  ] ++ (lib.optionals isLinux [
     ./niri
-    ./waybar
-    ./zed
-  ];
+  ]);
   home.stateVersion = "25.05";
 
   xdg.enable = true;
@@ -51,12 +54,6 @@ in {
 
       nodejs
 
-      # GUI
-      ghostty
-      discord
-
-      open-vm-tools
-
       biome
       alejandra
 
@@ -66,11 +63,18 @@ in {
       erlang_28
       pkgs.erlang-language-platform
     ]
-    ++ [
+    ++ (lib.optionals (isLinux) [
+      open-vm-tools
       #inputs.zig.packages.${system}.master
       inputs.jsonc_fmt.packages.${system}.default
       inputs.iroha.packages.${system}.default
       inputs.self.packages.${system}.efmt
+      firefox
+    ]) ++ (lib.optionals (isDarwin) [
+      inputs.xpack-arm-gcc.packages.${system}.default
+    ])
+    ++ [
+      inputs.ghostty
     ];
 
   #--------------------------------------------------
@@ -79,8 +83,11 @@ in {
   xdg.configFile = {
     "nvim/lua".source = ./nvim;
     "ghostty/config".text = builtins.readFile ./ghostty.linux;
+    
+  } // (lib.optionalAttrs isLinux {
     "niri/config.kdl".source = ./niri/niri.kdl;
-  };
+
+  });
 
   #--------------------------------------------------
   # Programs
@@ -95,6 +102,10 @@ in {
     shellAliases = shellAliases;
     shellInit = ''
       set -gx PATH $HOME/.cache/rebar3/bin $PATH
+      set -gx PNPM_HOME $HOME/.local/share/pnpm
+      if not contains $PNPM_HOME $PATH
+        set -gx PATH $PNPM_HOME $PATH
+      end
     '';
     functions = {
       btconnect = {
@@ -128,66 +139,41 @@ in {
     enable = true;
     defaultEditor = true;
     extraLuaConfig = lib.fileContents ./nvim/init.lua;
-
     plugins = with pkgs.vimPlugins; [
+      # Syntax & Highlighting
       nvim-treesitter.withAllGrammars
+
+      # LSP & Completion
       nvim-lspconfig
-
       blink-cmp
-      telescope-nvim
 
-      # UI
-      telescope-nvim
-      nvim-tree-lua
+      # File Management
+      oil-nvim
+
+      # Navigation & Motion
+      flash-nvim
+
+      # UI & Appearance
       kanagawa-nvim
       lualine-nvim
+      nvim-web-devicons
 
+
+            snacks-nvim
       plenary-nvim
       nui-nvim
-      nvim-web-devicons
     ];
 
     extraPackages = with pkgs; [
+      # LSP
       lua-language-server
       nixd
       rust-analyzer
       gopls
+      clang-tools
+      # Tools
+            ripgrep
     ];
-  };
-
-  programs.vscode = {
-    enable = true;
-    profiles.default = {
-      extensions = with pkgs.vscode-extensions;
-        [
-          vscode-icons-team.vscode-icons
-          vscodevim.vim
-          golang.go
-          bbenoist.nix
-          biomejs.biome
-        ]
-        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          {
-            name = "moonbit-lang";
-            publisher = "moonbit";
-            version = "0.1.2025110702";
-            sha256 = "sha256-1LB9I8vTutRdwYIxnKMT965hvAmsIK5W5fshclgkvUg=";
-          }
-        ];
-      userSettings = {
-        "editor.formatOnSave" = true;
-        "editor.defaultFormatter" = "biomejs.biome";
-        "[javascript]" = {
-          "editor.defaultFormatter" = "biomejs.biome";
-        };
-        "[typescript]" = {
-          "editor.defaultFormatter" = "biomejs.biome";
-        };
-        "[json]" = {
-          "editor.defaultFormatter" = "biomejs.biome";
-        };
-      };
-    };
   };
 
   # Browser
@@ -195,6 +181,4 @@ in {
   programs.google-chrome = lib.mkIf (currentSystemName == "x86_64") {
     enable = true;
   };
-
-  programs.firefox.enable = true;
 }
