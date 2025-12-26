@@ -23,6 +23,7 @@ in
 
     modules = [
       # Allow unfree packages.
+      {nixpkgs.config.allowUnfree = true;}
       (if isLinux then {
     nixpkgs.hostPlatform = system;
   } else {

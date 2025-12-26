@@ -44,7 +44,8 @@
   i18n = {
     defaultLocale = "en_US.UTF-8";
     inputMethod = {
-      enabled = "fcitx5";
+      enable = true;
+      type = "fcitx5";
       fcitx5.addons = with pkgs; [
         fcitx5-gtk
         fcitx5-mozc
@@ -53,10 +54,10 @@
   };
 
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       noto-fonts-cjk-serif
       noto-fonts-cjk-sans
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       nerd-fonts.jetbrains-mono
     ];
     fontDir.enable = true;
@@ -79,13 +80,17 @@
     };
   };
 
-  services.xserver = {
-    # Enable the X11 windowing system.
-    enable = true;
+  # services.xserver = {
+  #   # Enable the X11 windowing system.
+  #   enable = true;
+  #   displayManager.gdm.enable = true;
+  #   displayManager.gdm.wayland = true;
+  # };
+
     # Enable the GNOME Desktop Environment.
-    displayManager.gdm.enable = true;
-    displayManager.gdm.wayland = true;
-  };
+  services.displayManager.gdm.enable = true;
+  services.displayManager.gdm.wayland = true;
+
 
   # services.xserver.desktopManager.gnome.enable = true;
 

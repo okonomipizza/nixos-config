@@ -51,6 +51,7 @@ in {
       tree
       gcc
       libnotify
+      yazi
 
       nodejs
 
@@ -58,28 +59,38 @@ in {
       alejandra
 
       pnpm
-
       go
       erlang_28
       pkgs.erlang-language-platform
     ]
     ++ (lib.optionals (isLinux) [
       open-vm-tools
-      #inputs.zig.packages.${system}.master
+      inputs.ghostty.packages.${system}.default
+      inputs.zig.packages.${system}.master
       inputs.jsonc_fmt.packages.${system}.default
       inputs.iroha.packages.${system}.default
       inputs.self.packages.${system}.efmt
       firefox
+      man-pages
     ]) ++ (lib.optionals (isDarwin) [
       inputs.xpack-arm-gcc.packages.${system}.default
-    ])
-    ++ [
-      inputs.ghostty
-    ];
+    ]);
 
   #--------------------------------------------------
   # dotfiles
   #--------------------------------------------------
+home.sessionVariables = {
+    # LANG = "en_US.UTF-8";
+    # LC_CTYPE = "en_US.UTF-8";
+    # LC_ALL = "en_US.UTF-8";
+    EDITOR = "nvim";
+
+    AMP_API_KEY = "op://Private/Amp_API/credential";
+    OPENAI_API_KEY = "op://Private/OpenAPI_Personal/credential";
+  } // (if isDarwin then {
+    # See: https://github.com/NixOS/nixpkgs/issues/390751
+    DISPLAY = "nixpkgs-390751";
+  } else {});
   xdg.configFile = {
     "nvim/lua".source = ./nvim;
     "ghostty/config".text = builtins.readFile ./ghostty.linux;
@@ -126,8 +137,10 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "okonomipizza";
-    userEmail = "140386510+okonomipizza@users.noreply.github.com";
+    settings = {
+      user.name = "okonomipizza";
+      user.email = "140386510+okonomipizza@users.noreply.github.com";
+    };
     extraConfig = {
       color.ui = true;
       github.user = "okonomipizza";
@@ -158,8 +171,7 @@ in {
       lualine-nvim
       nvim-web-devicons
 
-
-            snacks-nvim
+      snacks-nvim
       plenary-nvim
       nui-nvim
     ];

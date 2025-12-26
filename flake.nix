@@ -2,7 +2,7 @@
   description = "NixOS systems and tools by okonomipizza";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # snapd
@@ -10,12 +10,12 @@
     nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -29,10 +29,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    #zig = {
-    #  url = "github:mitchellh/zig-overlay";
-    #  inputs.nixpkgs.follows = "nixpkgs";
-    #};
+    zig = {
+     url = "github:mitchellh/zig-overlay";
+     inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     jsonc_fmt = {
       url = "github:okonomipizza/jsonc_fmt";
@@ -58,7 +58,7 @@
     darwin,
     ghostty,
     niri,
-    #  zig,
+    zig,
     jsonc_fmt,
     iroha,
     xpack-arm-gcc,

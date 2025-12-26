@@ -41,6 +41,7 @@ keymap('n', '<leader>ff', function() snacks.picker.files() end, { desc = "Find F
 keymap('n', '<leader>fr', function() snacks.picker.recent() end, { desc = "Recent Files" })
 keymap('n', '<leader>fg', function() snacks.picker.grep() end, { desc = "Live Grep" })
 keymap('n', '<leader>fb', function() snacks.picker.buffers() end, { desc = "Buffers" })
+keymap('n', '<leader>fw', function() snacks.picker.grep_word() end, { desc = "Grep word" })
 
 -- Git関連
 keymap('n', '<leader>gf', function() snacks.picker.git_files() end, { desc = "Git Files" })

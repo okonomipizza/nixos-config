@@ -52,10 +52,9 @@ window-rule {
     focus-ring {
         on
         width 4
-        active-color "e5e4e2"
+        active-gradient from="#e5e4e200" to="#e5e4e2" angle=180
     }
 
-    geometry-corner-radius 12
     draw-border-with-background false
 }
 
