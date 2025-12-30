@@ -140,8 +140,6 @@ home.sessionVariables = {
     settings = {
       user.name = "okonomipizza";
       user.email = "140386510+okonomipizza@users.noreply.github.com";
-    };
-    extraConfig = {
       color.ui = true;
       github.user = "okonomipizza";
       init.defaultBranch = "main";
