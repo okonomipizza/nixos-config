@@ -1,0 +1,77 @@
+{
+  nixpkgs,
+  inputs,
+}: name: {
+  system,
+  user,
+  darwin ? false,
+}: let
+  # I use Linux and macos
+  isLinux = !darwin;
+
+  # The config files for this system.
+  machineConfig = ../machines/${name}.nix;
+  userOSConfig =
+    ../users/${user}/${
+      if darwin
+      then "darwin"
+      else "nixos"
+    }.nix;
+  userHMConfig = ../users/${user}/home-manager.nix;
+
+  systemFunc =
+    if darwin
+    then inputs.darwin.lib.darwinSystem
+    else nixpkgs.lib.nixosSystem;
+  home-manager =
+    if darwin
+    then inputs.home-manager.darwinModules
+    else inputs.home-manager.nixosModules;
+in
+  systemFunc rec {
+    inherit system;
+
+    modules = [
+      # Allow unfree packages.
+      (
+        if isLinux
+        then {
+          nixpkgs.hostPlatform = system;
+        }
+        else {
+          # macOS向けの設定があれば追加
+        }
+      )
+
+      # Snapd on Linux
+      (
+        if isLinux
+        then inputs.nix-snapd.nixosModules.default
+        else {}
+      )
+
+      machineConfig
+      userOSConfig
+      home-manager.home-manager
+      {
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.backupFileExtension = "backup";
+        home-manager.users.${user} = import userHMConfig {
+          currentSystemName = name;
+          inputs = inputs;
+        };
+      }
+
+      # We expose some extra arguments so that our modules can parameterize
+      # better based on these values.
+      {
+        config._module.args = {
+          currentSystem = system;
+          currentSystemName = name;
+          currentSystemUser = user;
+          inputs = inputs;
+        };
+      }
+    ];
+  }

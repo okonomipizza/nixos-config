@@ -1,0 +1,175 @@
+{
+  currentSystemName,
+  inputs,
+  ...
+}: {
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  isDarwin = currentSystemName == "macbook";
+  isLinux = currentSystemName == "x86_64" || currentSystemName == "vm-aarch64";
+
+  shellAliases = {
+    pn = "pnpm";
+    ls = "ls -F";
+    rm = "rm -i";
+    cp = "cp -i";
+    mvgk = "mv -i";
+    ga = "git add";
+    gc = "git commit";
+    gco = "git checkout";
+    gdiff = "git diff";
+    gp = "git push";
+    gs = "git status";
+    zed = "zeditor";
+    sd = "sudo systemctl poweroff";
+    v = "nvim";
+  };
+in {
+  imports =
+    [
+    ]
+    ++ (lib.optionals isLinux [
+      (import ./niri {
+        inherit pkgs inputs lib currentSystemName;
+      })
+    ]);
+  home.stateVersion = "25.05";
+
+  xdg.enable = true;
+
+  #--------------------------------------------------
+  # Packages
+  #--------------------------------------------------
+  home.packages = with pkgs;
+    [
+      # CLI
+      bat
+      eza
+      fd
+      gh
+      jq
+      tree
+      gcc
+      alejandra
+
+      nodejs
+      pnpm
+
+      go
+      erlang_28
+      pkgs.erlang-language-platform
+
+      # Terminal
+      ghostty
+    ]
+    ++ (lib.optionals isLinux [
+      inputs.self.packages.${stdenv.hostPlatform.system}.efmt
+      firefox
+      open-vm-tools
+    ])
+    ++ (lib.optionals isDarwin [
+      ]);
+
+  #--------------------------------------------------
+  # dotfiles
+  #--------------------------------------------------
+  xdg.configFile =
+    {
+      "nvim/lua".source = ./nvim;
+      "ghostty/config".text = builtins.readFile ./ghostty.linux;
+    }
+    // (lib.optionalAttrs isLinux {
+      "niri/config.kdl".source = ./niri/niri.kdl;
+    });
+
+  #--------------------------------------------------
+  # Programs
+  #--------------------------------------------------
+  programs.bash = {
+    enable = true;
+    shellAliases = shellAliases;
+  };
+
+  programs.fish = {
+    enable = true;
+    shellAliases = shellAliases;
+    shellInit = ''
+      set -gx PATH $HOME/.cache/rebar3/bin $PATH
+      set -gx PNPM_HOME $HOME/.local/share/pnpm
+      if not contains $PNPM_HOME $PATH
+        set -gx PATH $PNPM_HOME $PATH
+      end
+    '';
+  };
+
+  programs.starship = {
+    enable = true;
+    settings = pkgs.lib.importTOML ./starship.toml;
+  };
+
+  programs.git = {
+    enable = true;
+    settings = {
+      user.name = "okonomipizza";
+      user.email = "140386510+okonomipizza@users.noreply.github.com";
+      # extraConfig = {
+      color.ui = true;
+      github.user = "okonomipizza";
+      init.defaultBranch = "main";
+      # };
+    };
+  };
+
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    extraLuaConfig = lib.fileContents ./nvim/init.lua;
+    plugins = with pkgs.vimPlugins; [
+      # Syntax & Highlighting
+      nvim-treesitter.withAllGrammars
+
+      # LSP & Completion
+      nvim-lspconfig
+      blink-cmp
+
+      # File Management
+      oil-nvim
+
+      # Navigation & Motion
+      flash-nvim
+
+      # UI & Appearance
+      kanagawa-nvim
+      lualine-nvim
+      nvim-web-devicons
+
+      nvim-ts-autotag
+      nvim-autopairs
+
+      snacks-nvim
+      plenary-nvim
+      nui-nvim
+    ];
+
+    extraPackages = with pkgs; [
+      # LSP
+      lua-language-server
+      nixd
+      rust-analyzer
+      gopls
+      clang-tools
+      typescript-language-server
+
+      # Tools
+      ripgrep
+    ];
+  };
+
+  # Browser
+  programs.google-chrome = lib.mkIf (currentSystemName == "x86_64") {
+    enable = true;
+  };
+}

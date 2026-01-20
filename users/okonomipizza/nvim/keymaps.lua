@@ -1,0 +1,61 @@
+local keymap = vim.keymap.set
+
+keymap("n", "Y", "y$", { desc = "Yank to end of line" })
+
+-- Nvim Tree
+keymap("n", "<leader>tt", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+keymap("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle file explorer on current file" })
+keymap("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" })
+keymap("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
+
+keymap("n", "<leader>ee", function()
+    require("oil").open()
+end, { desc = "Oil current buffer's directory" })
+
+keymap("n", "<leader>eE", function()
+    require("oil").open(".")
+end, { desc = "Oil ." })
+
+keymap("n", "<leader>cb", function()
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    vim.api.nvim_buf_set_lines(0, row, row, true, { "/* */" })
+    vim.api.nvim_win_set_cursor(0, { row + 1, 3 })
+end, { desc = "Insert /* */ block" })
+
+-- Window navigation
+keymap({ "n", "t" }, "<C-h>", "<C-w>h", { desc = "Go to left window" })
+keymap({ "n", "t" }, "<C-j>", "<C-w>j", { desc = "Go to lower window" })
+keymap({ "n", "t" }, "<C-k>", "<C-w>k", { desc = "Go to upper window" })
+keymap({ "n", "t" }, "<C-l>", "<C-w>l", { desc = "Go to right window" })
+
+-- Move text up and down
+keymap("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+keymap("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+
+-- Terminal
+vim.api.nvim_create_autocmd("TermOpen", {
+    pattern = "*",
+    command = "startinsert"
+})
+vim.api.nvim_create_autocmd("BufEnter", {
+    pattern = "term://*",
+    command = "startinsert"
+})
+
+local function open_terminal_below(height)
+    height = height or 15
+    vim.cmd('botright split')
+    vim.cmd('resize' .. height)
+    vim.cmd('terminal')
+end
+
+local function open_terminal_right(height)
+    height = height or 80
+    vim.cmd('botright vsplit')
+    vim.cmd('resize' .. height)
+    vim.cmd('terminal')
+end
+
+keymap("n", "<leader>tb", function() open_terminal_below(15) end, { desc = "Terminal below" })
+keymap("n", "<leader>tr", function() open_terminal_right(80) end, { desc = "Terminal below" })
+keymap("t", "<ESC>", "<C-\\><C-n>", { desc = "Terminal: normal mode" })
