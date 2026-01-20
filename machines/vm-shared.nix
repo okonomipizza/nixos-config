@@ -6,6 +6,7 @@
   currentSystemName,
   ...
 }: {
+    imports = [./shared.nix];
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # VMware, Parallels both only support this being 0 otherwise you see
@@ -19,6 +20,8 @@
   networking = {
     nameservers = ["1.1.1.1" "8.8.8.8"];
   };
+
+  networking.networkmanager.enable = lib.mkForce true;
 
   # Don't require password for sudo
   security.sudo.wheelNeedsPassword = false;
