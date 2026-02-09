@@ -68,7 +68,6 @@ in {
     ++ (lib.optionals isLinux [
       inputs.self.packages.${stdenv.hostPlatform.system}.efmt
       firefox
-      open-vm-tools
     ])
     ++ (lib.optionals isDarwin [
       ]);

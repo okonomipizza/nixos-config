@@ -24,13 +24,13 @@ binds {
     Mod+T { spawn "ghostty"; }
 
     // Window management
-    Mod+Shift+Q { close-window; }
+    Mod+Q { close-window; }
     Mod+F { fullscreen-window; }
-    Mod+C { center-column; }
+    Mod+M { center-column; }
     Mod+O { open-overview; }
 
-    Mod+Right { set-window-width "+10%"; }
-    Mod+Left { set-window-width "-10%"; }
+    Mod+Minus { set-window-width "+10%"; }
+    Mod+0 { set-window-width "-10%"; }
 
     // Focus navigation
     Mod+H { focus-column-left; }
